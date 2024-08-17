@@ -1,4 +1,4 @@
-const grpc = require('grpc');
+const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 
 const tasksDefs = protoLoader.loadSync('./tasks.proto');
@@ -35,7 +35,11 @@ grpcServer.addService(tasksProto.TaskService.service, {
     },
 });
 
-grpcServer.bind('0.0.0.0:5050', grpc.ServerCredentials.createInsecure());
-grpcServer.start();
+grpcServer.bindAsync('0.0.0.0:5050', grpc.ServerCredentials.createInsecure(), (err, port) => {
+    if (err) {
+        console.error(err);
+        process.exit(1);
+    }
+});
 
 console.info('Server started on 0.0.0.0:5050');
